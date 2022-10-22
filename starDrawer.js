@@ -1,10 +1,17 @@
+var nVertices;
+var screenWidth;
+var screenHeight;
+var oVertices;
+var canvasCtx;
+var animationIteration;
+
 function init(){
 
     // configure number of vertices 
     // and how many vertices positions should be "incremented"
     // to define the ends of a line
-    let nVertices = 5;
-    let increment = 2;
+    nVertices = 101;
+    let increment = 35;
 
     // offset fot the first vertex. - Math.PI / 2 = "top, center"
     let angleOffset = - Math.PI / 2;
@@ -12,8 +19,8 @@ function init(){
     // get and apply other display settings
     let canvas = document.getElementById("screen");
 
-    var screenWidth = window.innerWidth;
-    var screenHeight = window.innerHeight;
+    screenWidth = window.innerWidth;
+    screenHeight = window.innerHeight;
 
     // limit to 500 px square
     canvas.width = Math.min(screenWidth - 10, 500);
@@ -34,10 +41,10 @@ function init(){
     let vertices = createVertices(cx, cy, r, nVertices, angleOffset);
 
     // define the order the vertices should be used to draw the lines
-    let oVertices = getVerticesOrder(vertices, increment);
+    oVertices = getVerticesOrder(vertices, increment);
     
-    let canvasCtx = canvas.getContext('2d');
-    draw(canvasCtx, oVertices);
+    canvasCtx = canvas.getContext('2d');
+    animationIteration = 0;
 }
 
 function createVertices(cx, cy, r, n, angleOffset){
@@ -74,4 +81,25 @@ function draw(ctx, vertices){
     ctx.stroke();
 }
 
-requestAnimationFrame(init);
+function animateOneLine(){
+    drawOneLine(canvasCtx, oVertices, animationIteration);
+    animationIteration++;
+    if(animationIteration < nVertices){
+        requestAnimationFrame(animateOneLine);
+    }
+    else{
+        console.log("Finished!");
+    }
+}
+
+function drawOneLine(ctx, vertices, iteration){
+    let v1 = vertices[iteration % vertices.length];
+    let v2 = vertices[(iteration + 1) % vertices.length];
+
+    ctx.moveTo(v1.x, v1.y);
+    ctx.lineTo(v2.x, v2.y);
+    ctx.stroke();
+}
+
+init();
+requestAnimationFrame(animateOneLine);
