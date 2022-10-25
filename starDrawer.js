@@ -1,3 +1,9 @@
+function clearScreen(ctx){
+    ctx.beginPath();
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, 500, 500);
+}
+
 function animation_OneLine(ctx, orderedVertices){
     this.ctx = ctx;
     this.vertices = orderedVertices;
@@ -121,8 +127,12 @@ function Config(){
     }
 
     self.config = function(){
-        self.nVertices = 101;
-        self.increment = 41;
+        self.nVertices = document.getElementById("nVertices").value || 5;
+        self.increment = document.getElementById("increment").value || 2;
+
+        document.getElementById("nVerticesValue").value = self.nVertices;
+        document.getElementById("incrementValue").value = self.increment;
+
         self.vertices = self.createVertices(self.cx, self.cy, self.r, self.nVertices, self.angleOffset);
         self.oVertices = self.getVerticesOrder(self.vertices, self.increment);
         self.iteration = 0;
@@ -131,6 +141,10 @@ function Config(){
         self.animations.push( new animation_OneLineFading(self.ctx, self.oVertices) );
         self.animations.push( new animation_OneLineFading(self.ctx, self.oVertices) );
         self.animations.push( new animation_OneLine(self.ctx, self.oVertices) );
+        if(self.animationId != null){
+            console.log("Cancelling!");
+            window.cancelAnimationFrame(self.animationId);
+        }
     }
 
     self.animate = function(){
@@ -141,7 +155,7 @@ function Config(){
                 console.log("keep drawing = false; shifting animations...");
                 self.animations.shift();
             }
-            requestAnimationFrame(self.animate);
+            self.animationId = requestAnimationFrame(self.animate);
         }
         else{
             console.log("Finished!");
@@ -151,5 +165,48 @@ function Config(){
 
 var config = new Config();
 
-config.config();
-requestAnimationFrame(config.animate);
+function restart(){
+    clearScreen(config.ctx);
+    config.config();
+    config.animationId = requestAnimationFrame(config.animate);
+}
+
+function updateIncrementMaxValue(){
+    let maxValue = document.getElementById("nVertices").value - 1;
+    document.getElementById("increment").max = maxValue;
+    document.getElementById("incrementMaxLabel").innerHTML = maxValue;
+
+    document.getElementById("incrementValue").value = document.getElementById("increment").value;
+}
+
+function updateNVerticesRange(){
+    let value = document.getElementById("nVertices").value;
+    document.getElementById("nVerticesValue").value = value;
+    
+    updateIncrementMaxValue();
+    restart();
+}
+
+function updateNVerticesValue(){
+    let value = document.getElementById("nVerticesValue").value;
+    document.getElementById("nVertices").value = value;
+    
+    updateIncrementMaxValue();
+    restart();
+}
+
+function updateIncrementRange(){
+    let value = document.getElementById("increment").value;
+    document.getElementById("incrementValue").value = value;
+    restart();
+}
+
+function updateIncrementValue(){
+    let value = document.getElementById("incrementValue").value;
+    document.getElementById("increment").value = value;
+    restart();
+}
+
+window.onload = function(){
+    updateNVerticesRange();
+}

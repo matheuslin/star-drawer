@@ -2,3 +2,23 @@ canvas {
     background-color: #ffffff;
     /* border: 1px solid #000000; */
 }
+
+.control{
+    clear: both;
+}
+
+.control label.label {
+    width: 140px;
+    display: inline-block;
+    text-align: right;
+}
+
+.control input.range {
+    width: 300px;
+}
+
+.control input.text {
+    width: 40px;
+    display: inline-block;
+    text-align: right;
+}
